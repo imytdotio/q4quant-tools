@@ -277,6 +277,19 @@ const SURFACE_PRESETS = {
 const STRIKES = Array.from({ length: 25 }, (_, i) => .6 + i / 30)
 const EXPIRIES = Array.from({ length: 19 }, (_, i) => 1 / 12 + i / 18 * (2 - 1 / 12))
 const DEFAULT_CAMERA = { yaw: .65, tilt: .55 }
+const SURFACE_THEMES = {
+  blue: { label: 'Blue', stops: [[184, 214, 251], [37, 99, 217]] },
+  'blue-red': { label: 'Blue / red', stops: [[37, 99, 217], [236, 238, 244], [205, 45, 55]] },
+  'red-green': { label: 'Red / green', stops: [[26, 150, 75], [246, 226, 140], [205, 45, 55]] },
+} as const
+type SurfaceTheme = keyof typeof SURFACE_THEMES
+const surfaceColor = (theme: SurfaceTheme, t: number) => {
+  const stops = SURFACE_THEMES[theme].stops
+  const x = Math.max(0, Math.min(1, t)) * (stops.length - 1)
+  const i = Math.min(Math.floor(x), stops.length - 2), f = x - i
+  return `rgb(${stops[i].map((c, j) => Math.round(c + (stops[i + 1][j] - c) * f)).join(',')})`
+}
+const surfaceGradient = (theme: SurfaceTheme) => `linear-gradient(90deg,${SURFACE_THEMES[theme].stops.map(c => `rgb(${c.join(',')})`).join(',')})`
 
 function VolatilitySurface() {
   const [shape, setShape] = useState<SurfaceShape>(SURFACE_PRESETS.smile)
@@ -284,6 +297,7 @@ function VolatilitySurface() {
   const [selected, setSelected] = useState({ strike: 12, expiry: 9 })
   const [preset, setPreset] = useState('smile')
   const [camera, setCamera] = useState(DEFAULT_CAMERA)
+  const [theme, setTheme] = useState<SurfaceTheme>('blue')
   const drag = useRef<{ x: number; y: number; yaw: number; tilt: number } | null>(null)
   const target = EXPIRIES.flatMap(t => STRIKES.map(k => surfaceVolatility(k, t, shape)))
   const values = useAnimatedValues(target)
@@ -297,7 +311,7 @@ function VolatilitySurface() {
     const average = indices.reduce((sum, i) => sum + values[i], 0) / 4
     const intensity = (average - min) / Math.max(max - min, 1)
     return { key: row * 25 + col, row, col, points: indices.map(i => coords(points[i])).join(' '), depth: indices.reduce((sum, i) => sum + points[i].depth, 0) / 4,
-      fill: `rgb(${Math.round(184 - intensity * 147)},${Math.round(214 - intensity * 115)},${Math.round(251 - intensity * 34)})` }
+      fill: surfaceColor(theme, intensity) }
   })).sort((a, b) => a.depth - b.depth)
   const index = selected.expiry * 25 + selected.strike
   const point = points[index]
@@ -319,7 +333,7 @@ function VolatilitySurface() {
       </aside>
       <div className="pricing-results">
         <div className="pricing-metrics">{[{ label: 'Selected volatility', value: values[index], note: `${(EXPIRIES[selected.expiry] * 12).toFixed(1)} months · ${money(STRIKES[selected.strike] * forward)} strike` }, { label: 'Surface low', value: min, note: 'Across displayed grid' }, { label: 'Surface high', value: max, note: 'Across displayed grid' }].map(item => <div key={item.label}><span>{item.label}</span><strong>{item.value.toFixed(2)}%</strong><small>{item.note}</small></div>)}</div>
-        <div className="chart-toolbar"><div><h3>Implied volatility surface</h3><p>Drag to rotate · hover to inspect · arrow keys to orbit</p></div><button className="surface-reset" onClick={() => setCamera(DEFAULT_CAMERA)}>Reset view ↺</button></div>
+        <div className="chart-toolbar"><div><h3>Implied volatility surface</h3><p>Drag to rotate · hover to inspect · arrow keys to orbit</p></div><div className="surface-controls"><div className="tool-segment" aria-label="Surface colour theme">{(Object.keys(SURFACE_THEMES) as SurfaceTheme[]).map(key => <button key={key} aria-pressed={theme === key} onClick={() => setTheme(key)}>{SURFACE_THEMES[key].label}</button>)}</div><button className="surface-reset" onClick={() => setCamera(DEFAULT_CAMERA)}>Reset view ↺</button></div></div>
         <div className="surface-frame">
           <svg className="volatility-surface" viewBox="0 0 760 520" role="img" tabIndex={0} aria-label="Interactive 3D volatility surface. Strike price, time to maturity, and implied volatility. Drag or use arrow keys to rotate; use the sliders below to inspect points."
             onKeyDown={e => { if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) { e.preventDefault(); setCamera(c => ({ yaw: Math.max(.15, Math.min(1.35, c.yaw + (e.key === 'ArrowLeft' ? -.06 : e.key === 'ArrowRight' ? .06 : 0))), tilt: Math.max(.25, Math.min(.85, c.tilt + (e.key === 'ArrowUp' ? .04 : e.key === 'ArrowDown' ? -.04 : 0))) })) } }}
@@ -344,7 +358,7 @@ function VolatilitySurface() {
             <text className="surface-axis-title" x={project(0,1,0).x} y={project(0,1,0).y+47} textAnchor="middle">STRIKE PRICE (USD)</text>
             <text className="surface-axis-title" x={project(1,0,0).x+22} y={project(1,0,0).y+48} textAnchor="middle">TIME TO MATURITY</text>
           </svg>
-          <div className="surface-scale"><span>{min.toFixed(1)}%</span><i /><span>{max.toFixed(1)}%</span><span>Implied volatility</span></div>
+          <div className="surface-scale"><span>{min.toFixed(1)}%</span><i style={{ background: surfaceGradient(theme) }} /><span>{max.toFixed(1)}%</span><span>Implied volatility</span></div>
         </div>
         <div className="surface-inspect"><label className="curve-scrub">Inspect strike<input aria-label="Inspect surface strike" type="range" min={0} max={24} value={selected.strike} onChange={e => setSelected(s => ({...s,strike:Number(e.target.value)}))} /></label><label className="curve-scrub">Inspect expiry<input aria-label="Inspect surface expiry" type="range" min={0} max={18} value={selected.expiry} onChange={e => setSelected(s => ({...s,expiry:Number(e.target.value)}))} /></label></div>
         <div className="chart-readout"><span>Strike <b>{money(forward*STRIKES[selected.strike])}</b></span><span>Expiry <b>{(EXPIRIES[selected.expiry]*12).toFixed(1)} months</b></span><span>Implied vol <b>{values[index].toFixed(2)}%</b></span></div>
