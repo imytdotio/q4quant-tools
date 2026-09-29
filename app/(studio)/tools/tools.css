@@ -82,3 +82,7 @@
 @keyframes tools-header-release{from{transform:translateY(0)}to{transform:translateY(var(--push-distance,100px))}}
 .tools-page .momentum-header[data-tools-push]{will-change:translate,transform;animation:tools-header-push linear both,tools-header-release linear both!important;animation-timeline:scroll(root),scroll(root)!important;animation-range:var(--push-start) var(--push-end),var(--release-start) var(--release-end)!important}
 .tools-page .momentum-header[data-tools-push]:focus-within{animation:none!important}
+
+.tools-source-link{text-decoration:none;transition:color .2s,border-color .2s,background .2s}
+.tools-source-link:hover{color:#174eaa;border-color:#7ea4e7;background:#e7effc}
+.tools-source-link:focus-visible{outline:2px solid #2563d9;outline-offset:4px}

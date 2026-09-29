@@ -1,5 +1,6 @@
 'use client'
 
+import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { ThinkingOrb } from 'thinking-orbs'
 import { calculatePokerOdds, cardLabel, handName, RANKS, SUITS, seededRandom, shuffledDeck, type PokerOdds } from '@/lib/poker'
@@ -49,7 +50,7 @@ export default function PokerTrainer() {
   const loss = odds ? 100 * odds.losses / odds.total : 0
   const label = board.length >= 3 ? handName([...hole, ...board]) : hole.length === 2 && hole[0] % 13 === hole[1] % 13 ? 'Pocket pair' : 'Two hole cards'
   return <>
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">03 / PROBABILITY PRACTICE</p><h2>Texas Hold’em trainer</h2><p>Read the cards. Estimate your edge. Test your intuition.</p></div><span className="tools-tag"><i /> ONE OPPONENT</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">03 / PROBABILITY PRACTICE</p><h2>Texas Hold’em trainer</h2><p>Read the cards. Estimate your edge. Test your intuition.</p></div><ToolSourceLink /></div>
     <div className="poker-layout">
       <div className="poker-table">
         <div className="poker-table-top"><span className="tools-tag">{stage.toUpperCase()}</span><span>{count} / 5 COMMUNITY CARDS</span></div>

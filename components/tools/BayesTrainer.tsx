@@ -1,5 +1,6 @@
 'use client'
 
+import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { BAYES_ROUNDS, sampleBayesRounds, validBayesRound, type BayesRound, bayesPosterior, evidenceSplit, populationCells, type BayesCell } from '@/lib/bayes'
 
@@ -66,7 +67,7 @@ export default function BayesTrainer() {
   if (loading) return <p role="status">Loading practice scenarios…</p>
   return <>
     {fallback && <p className="poker-training-note">Using bundled scenarios; published content is temporarily unavailable.</p>}
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">04 / PROBABILITY PRACTICE</p><h2>Bayes’ rule trainer</h2><p>Start with a belief. See the evidence. Update your estimate.</p></div><span className="tools-tag"><i /> {finished ? 'SESSION COMPLETE' : `ROUND ${round + 1} / ${rounds.length}`}</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">04 / PROBABILITY PRACTICE</p><h2>Bayes’ rule trainer</h2><p>Start with a belief. See the evidence. Update your estimate.</p></div><ToolSourceLink /></div>
     {finished ? <div className="bayes-complete"><p className="tools-eyebrow">{errors.length} UPDATES. A SHARPER INTUITION.</p><h3>How close were your estimates?</h3><strong>{meanError.toFixed(1)}<small> percentage points</small></strong><p>Average absolute error across every update. Lower is better.</p><div className="bayes-session-results">{errors.map((item, i) => <div key={i}><span>{item.label}</span><b>{item.error.toFixed(1)} pp</b></div>)}</div><button className="poker-deal" onClick={reset}>Practise again ↺</button></div> : <div className="bayes-layout">
       <div className="bayes-challenge" key={`${round}-${step}`}>
         <div className="bayes-round-top"><span className="tools-tag">{r.category.toUpperCase()}{step === 1 ? ' · UPDATE 2' : ''}</span><button className="surface-reset" onClick={reset}>Restart ↺</button></div>

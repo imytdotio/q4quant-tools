@@ -1,5 +1,6 @@
 'use client'
 
+import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import BayesTrainer from './BayesTrainer'
 import MarketMakingGame from './MarketMakingGame'
@@ -226,7 +227,7 @@ function OptionsApp() {
   const clearCrosshair = () => { setActiveCell(null); setCrosshair(null) }
 
   return <>
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">01 / DERIVATIVES</p><h2>Options pricing</h2><p>One model. A whole landscape of possibilities.</p></div><span className="tools-tag"><i /> BLACK–SCHOLES</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">01 / DERIVATIVES</p><h2>Options pricing</h2><p>One model. A whole landscape of possibilities.</p></div><ToolSourceLink /></div>
     <div className="pricing-workspace">
       <aside className="pricing-inputs"><div className="input-heading"><h3>Your assumptions</h3><button onClick={() => { setInputs(DEFAULT_OPTION); setKind('call'); clearCrosshair(); setCurveIndex(null) }}>Reset ↺</button></div>
         <div className="tool-segment" aria-label="Option type">{(['call', 'put'] as const).map(v => <button key={v} aria-pressed={kind === v} onClick={() => setKind(v)}>{v === 'call' ? 'Call option' : 'Put option'}</button>)}</div>
@@ -305,7 +306,7 @@ function VolatilitySurface() {
   const choosePreset = (key: keyof typeof SURFACE_PRESETS) => { setShape(SURFACE_PRESETS[key]); setPreset(key) }
   const update = (key: keyof SurfaceShape, v: number) => { setShape(old => ({ ...old, [key]: v })); setPreset('custom') }
   return <>
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">02 / IMPLIED VOLATILITY</p><h2>Volatility surface</h2><p>A new dimension to the shape of uncertainty.</p></div><span className="tools-tag"><i /> 3D EXPLORER</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">02 / IMPLIED VOLATILITY</p><h2>Volatility surface</h2><p>A new dimension to the shape of uncertainty.</p></div><ToolSourceLink /></div>
     <div className="pricing-workspace">
       <aside className="pricing-inputs"><div className="input-heading"><h3>Shape your surface</h3><button onClick={() => { choosePreset('smile'); setForward(100); setCamera(DEFAULT_CAMERA); setSelected({ strike: 12, expiry: 9 }) }}>Reset ↺</button></div>
         <div className="smile-presets" aria-label="Surface presets">{Object.entries(SURFACE_PRESETS).map(([key, item]) => <button key={key} aria-pressed={preset === key} onClick={() => choosePreset(key as keyof typeof SURFACE_PRESETS)}>{item.label}</button>)}</div>

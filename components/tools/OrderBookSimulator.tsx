@@ -1,5 +1,6 @@
 'use client'
 
+import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useRef, useState } from 'react'
 import { MARKET_SCENARIOS, validMarketScenario, cancelUserOrders, type MarketScenario, createBook, executeOrder, nextMarketEvent, quote, scorePrediction, settle, STARTING_CASH, type Book, type Execution, type Level, type Liquidity, type Side } from '@/lib/orderbook'
 
@@ -195,7 +196,7 @@ export default function OrderBookSimulator() {
   if (loading) return <p role="status">Loading market scenarios…</p>
   return <>
     {fallback && <p className="poker-training-note">Using bundled market scenarios; published content is temporarily unavailable.</p>}
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">05 / MARKET MICROSTRUCTURE</p><h2>Order-book simulator</h2><p>Read the book. Predict the fill. Watch the shares trade.</p></div><span className="tools-tag"><i /> HLS · FICTIONAL</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">05 / MARKET MICROSTRUCTURE</p><h2>Order-book simulator</h2><p>Read the book. Predict the fill. Watch the shares trade.</p></div><ToolSourceLink /></div>
     <div className="book-toolbar book-scenario-toolbar">
       <label>Market scenario <select aria-label="Market scenario" disabled={busy !== null} value={scenario.id} onChange={e => { setScenario(scenarios.find(s => s.id === e.target.value)!); reset(liquidity) }}>{scenarios.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select></label>
       <button disabled={busy !== null} onClick={() => reset(liquidity)}>New random session</button>

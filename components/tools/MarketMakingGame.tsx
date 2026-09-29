@@ -1,5 +1,6 @@
 'use client'
 
+import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useState, type CSSProperties, type FormEvent } from 'react'
 import {
   DICE_COUNT, DIE_MEAN, FLOW_PROFILES, MAX_SIZE, MAX_WIDTH, QUOTES_PER_REVEAL, TOTAL_QUOTES,
@@ -93,7 +94,7 @@ export default function MarketMakingGame() {
   const dieState = (i: number): DieState => stage === 'settled' || (i < DICE_COUNT - 1 && i < revealed) ? 'shown' : i === DICE_COUNT - 1 ? 'insider' : 'hidden'
 
   return <>
-    <div className="tool-app-heading"><div><p className="tools-eyebrow">06 / TRADING INTERVIEW</p><h2>Market-making game</h2><p>Quote a two-sided market. Get picked off. Learn from the flow.</p></div><span className="tools-tag"><i /> SUM OF FOUR DICE</span></div>
+    <div className="tool-app-heading"><div><p className="tools-eyebrow">06 / TRADING INTERVIEW</p><h2>Market-making game</h2><p>Quote a two-sided market. Get picked off. Learn from the flow.</p></div><ToolSourceLink /></div>
     <div className="mm-layout">
       <div className="mm-stage">
         <div className="mm-toolbar">
