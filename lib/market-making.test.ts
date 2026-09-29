@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
-  FLOW_PROFILES, TOTAL_QUOTES, counterpartyTrade, createGame, insiderValue, noiseTradeProbability, playQuote,
+  CARDS, FLOW_PROFILES, SOURCES, TOTAL_QUOTES, cardValue, counterpartyTrade, createGame, insiderValue, noiseTradeProbability, playQuote,
   position, publicFair, revealedBefore, settlementValue, summarize, tradePnl, validateQuote, type Game, type StepResult,
 } from './market-making'
 
 const standard = FLOW_PROFILES.find(p => p.id === 'standard')!
 const fixedGame = (informed: boolean[], dice = [6, 1, 3, 5]): Game => ({
-  dice,
+  source: SOURCES[0],
+  items: dice,
+  values: dice,
   profile: standard,
   arrivals: informed.map((flag, i) => ({ informed: flag, noiseSide: i % 2 ? 'sell' : 'buy', noiseDraw: 0 })),
 })
@@ -15,8 +17,8 @@ describe('market-making game', () => {
   it('deals the same game for the same seed', () => {
     const a = createGame(42, standard), b = createGame(42, standard)
     expect(a).toEqual(b)
-    expect(a.dice).toHaveLength(4)
-    expect(a.dice.every(d => Number.isInteger(d) && d >= 1 && d <= 6)).toBe(true)
+    expect(a.values).toHaveLength(4)
+    expect(a.values.every(d => Number.isInteger(d) && d >= 1 && d <= 6)).toBe(true)
     expect(a.arrivals).toHaveLength(TOTAL_QUOTES)
   })
 
@@ -90,5 +92,56 @@ describe('market-making game', () => {
     const result = playQuote(game, 0, { bid: 10, ask: 11, size: 2 })
     // Noise buyer lifts the benchmark ask of 15 at size 2; the dice settle at 4, so selling at 15 makes 2 × 11.
     expect(summarize(game, [result]).benchmarkPnl).toBe(22)
+  })
+
+  describe('card mode', () => {
+    // Values: ace 1, jack 11, queen 12, king 13.
+    const cardGame = (informed: boolean[], values: number[]): Game => ({ ...fixedGame(informed, values), source: CARDS })
+
+    it('values cards with aces low and kings at 13', () => {
+      expect(cardValue(12)).toBe(1) // A♠
+      expect(cardValue(0)).toBe(2) // 2♠
+      expect(cardValue(9)).toBe(11) // J♠
+      expect(cardValue(24)).toBe(13) // K♥
+      expect(CARDS.unseenMean([])).toBe(7)
+    })
+
+    it('deals four distinct cards from one deck', () => {
+      const a = createGame(7, standard, CARDS), b = createGame(7, standard, CARDS)
+      expect(a).toEqual(b)
+      expect(new Set(a.items).size).toBe(4)
+      expect(a.items.every(c => Number.isInteger(c) && c >= 0 && c < 52)).toBe(true)
+      expect(a.values).toEqual(a.items.map(cardValue))
+    })
+
+    it('prices unseen cards at the average of what is left in the deck', () => {
+      const values = [13, 1, 5, 7]
+      expect(publicFair(values, 0, CARDS)).toBe(28)
+      // A king is gone, so each of the three unseen cards averages 351 / 51.
+      expect(publicFair(values, 1, CARDS)).toBeCloseTo(13 + 3 * 351 / 51, 10)
+      // The insider holds a 7, which leaves the deck average at exactly 7.
+      expect(insiderValue(values, 0, CARDS)).toBe(28)
+      expect(insiderValue(values, 3, CARDS)).toBe(settlementValue(values))
+    })
+
+    it('doubles the width limits', () => {
+      expect(CARDS.maxWidth).toBe(8)
+      expect(CARDS.benchmarkHalfWidth).toBe(2)
+      expect(noiseTradeProbability(2, CARDS)).toBe(1)
+      expect(noiseTradeProbability(8, CARDS)).toBe(.25)
+      expect(validateQuote({ bid: 24, ask: 32, size: 1 }, CARDS)).toBeNull()
+      expect(validateQuote({ bid: 24, ask: 32.5, size: 1 }, CARDS)).toMatch(/at most \$8/)
+    })
+
+    it('decomposes P&L exactly into spread, information and luck', () => {
+      const game = cardGame([true, false, true, false, true, false, true, false], [13, 4, 9, 2])
+      const quotes = [[25, 31], [26, 30], [30, 36], [31, 34], [33, 38], [32, 35], [29, 33], [28, 30]]
+      const results = quotes.map(([bid, ask], step) => playQuote(game, step, { bid, ask, size: 1 + (step % 3) }))
+      const summary = summarize(game, results)
+      const direct = results.reduce((total, r) => total + tradePnl(r, summary.settlement), 0)
+      expect(summary.settlement).toBe(28)
+      expect(summary.pnl).toBeCloseTo(direct, 2)
+      expect(summary.spread + summary.information + summary.luck).toBeCloseTo(summary.pnl, 10)
+    })
   })
 })
