@@ -1,0 +1,67 @@
+/* 06 / Market-making game. Shares the tools.css palette and reuses poker/book primitives. */
+.mm-layout{display:grid;grid-template-columns:minmax(0,1fr) 315px}
+.mm-stage{padding:26px 30px 32px;background:radial-gradient(ellipse at 50% 30%,#e8f1ff,#f9fbff 75%);min-width:0}
+.mm-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mm-progress{font:9px var(--font-mono);color:#7b8da7}
+.mm-profile-note{margin-top:12px}
+.mm-dice{display:grid;grid-template-columns:repeat(4,minmax(0,110px));justify-content:center;gap:16px;margin:30px 0 18px}
+.mm-die{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+.mm-die small{font:9px var(--font-mono);color:#7b8da7;white-space:nowrap}
+.mm-die-face{width:100%;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;position:relative}
+.mm-die-shown{background:white;border:1px solid #cfddf0;box-shadow:0 6px 18px #2b59940f;animation:mm-roll .45s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:var(--die-delay)}
+.mm-die-hidden{background:#edf3fc66;border:1px dashed #bdcfe6}
+.mm-die-insider{background:repeating-linear-gradient(45deg,#dce9fc 0 2px,#edf4ff 2px 7px);border:3px solid white;outline:1px solid #ccdaf0}
+.mm-die-mark{font:500 28px var(--font-sans);color:#9fb7d9}.mm-die-insider .mm-die-mark{color:#6b8fc7;font-size:24px}
+.mm-pips{position:absolute;inset:16%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);place-items:center}
+.mm-pips i{width:62%;aspect-ratio:1;border-radius:50%}.mm-pips i.is-on{background:#244f91}
+.mm-contract{text-align:center;font-size:11px;color:#7e91a9;line-height:1.8}.mm-contract b{color:#2c4c73;font-weight:500}
+.mm-ticket,.mm-result,.mm-summary{margin-top:26px;padding-top:24px;border-top:1px solid #dce6f3;animation:tool-enter .35s both}
+.mm-ticket-prices{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:14px;align-items:end}
+.mm-ticket label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#2c4c73;min-width:0}
+.mm-ticket label span,.mm-size>span small{font-size:10px;font-weight:400;color:#7e91a9}
+.mm-ticket input{border:1px solid #d5e1f0;background:white;padding:12px 14px;font-size:20px;color:#243e5e;width:100%;font-variant-numeric:tabular-nums}
+.mm-ticket input:focus-visible{outline:2px solid #2563d9;outline-offset:2px}
+.mm-size{display:flex;flex-direction:column;gap:6px}.mm-size>span{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#2c4c73}
+.mm-size .tool-segment button{padding:12px 13px;font-size:13px;font-variant-numeric:tabular-nums}
+.mm-width{font-size:11px;color:#6d829c;line-height:1.8;margin:14px 0 18px}.mm-width b{color:#2563d9;font-weight:500}
+.mm-ticket .poker-deal,.mm-result .poker-deal,.mm-summary .poker-deal{min-height:46px;padding:12px 20px;font-size:12px;max-width:280px}
+.mm-ticket .book-error{margin:-6px 0 16px}
+.mm-result h3{font-size:24px;font-weight:500;line-height:1.3;margin:16px 0 10px;color:#1f3d63}
+.mm-result p{font-size:12px;line-height:1.8;color:#6d829c;max-width:560px}
+.mm-result .mm-result-fair{margin-top:10px;padding:10px 12px;background:#f4f8ff;border:1px solid #d5e3f6;color:#4d6d94}.mm-result-fair b{color:#2563d9;font-weight:500}
+.mm-result .poker-deal{margin-top:20px}
+.mm-summary .tools-eyebrow{margin-bottom:10px}
+.mm-pnl{display:block;font-size:64px;font-weight:500;line-height:1.1;color:#2563d9;font-variant-numeric:tabular-nums}.mm-pnl.is-down{color:#b06377}
+.mm-summary-caption{font-size:12px;color:#7e91a9;line-height:1.8;margin-top:8px}
+.mm-breakdown{margin-top:20px;border-top:1px solid #dce6f3}
+.mm-breakdown>div{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #dce6f3;font-size:13px;color:#3d5c83}
+.mm-breakdown small{display:block;font-size:10px;color:#8a9bb1;margin-top:4px}
+.mm-breakdown b,.mm-compare b{font-weight:500;font-variant-numeric:tabular-nums;color:#244f91;white-space:nowrap}
+.mm-compare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+.mm-compare>div{padding:14px 12px;background:#ffffffb3;border:1px solid #d7e3f4;min-width:0}
+.mm-compare span{display:block;font:8px var(--font-mono);color:#738aa7;text-transform:uppercase}
+.mm-compare b{display:block;font-size:22px;margin:8px 0 6px}.mm-compare small{font-size:9px;line-height:1.6;color:#8a9bb1;display:block}
+.mm-lesson{margin:20px 0;padding:14px;border-left:2px solid #82a8e5;background:#ffffffb3;font-size:12px;line-height:1.8;color:#4d6d94}
+.mm-review{margin-bottom:22px;font-size:12px;color:#4d6d94}.mm-review summary{cursor:pointer;font-weight:500;color:#354d6e}
+.mm-review-scroll{overflow-x:auto;margin-top:12px}
+.mm-review table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:620px}
+.mm-review th,.mm-review td{padding:8px 6px;border-bottom:1px solid #dce6f3;text-align:left;white-space:nowrap}
+.mm-review th{font:8px var(--font-mono);color:#738aa7;text-transform:uppercase;font-weight:400}
+.mm-aside{padding:26px;border-left:1px solid var(--line);background:white;min-width:0}
+.mm-fair{padding-bottom:22px;border-bottom:1px solid #e3ebf5}
+.mm-fair strong{display:block;font-size:48px;font-weight:500;color:#2563d9;line-height:1.2;margin-top:10px;font-variant-numeric:tabular-nums}
+.mm-fair .mm-fair-hidden{color:#b3c9e9;font-weight:300}
+.mm-fair p{font-size:11px;color:#7f90a6;line-height:1.8;margin-top:8px}
+.mm-position{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:18px 0;border-bottom:1px solid #e3ebf5}
+.mm-position span{display:block;font-size:10px;color:#8594a8}
+.mm-position b{display:block;margin-top:5px;font-size:15px;font-weight:500;color:#445c7b;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.mm-blotter{padding-top:18px}.mm-blotter>span{font:9px var(--font-mono);color:#6283b0}
+.mm-blotter p{font-size:11px;color:#9aabc1;margin-top:10px}
+.mm-blotter ol{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto}
+.mm-blotter li{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#f8fbff;border:1px solid #e1eaf5;font-size:11px;color:#2c4c73;font-variant-numeric:tabular-nums;animation:tool-enter .3s both}
+.mm-blotter li>span{font:9px var(--font-mono);color:#8aa0bb}.mm-blotter li i{margin-left:auto;font-style:normal;font-size:10px;color:#7e91a9}
+@keyframes mm-roll{from{opacity:0;transform:translateY(10px) rotate(-12deg) scale(.9)}to{opacity:1;transform:none}}
+@media(max-width:1100px){.mm-layout{grid-template-columns:minmax(0,1fr) 275px}.mm-stage{padding:24px}.mm-aside{padding:22px}}
+@media(max-width:800px){.mm-layout{grid-template-columns:1fr}.mm-aside{border-left:0;border-top:1px solid var(--line)}}
+@media(max-width:600px){.mm-stage{padding:20px 14px}.mm-aside{padding:22px 18px}.mm-dice{gap:8px;margin:24px 0 14px}.mm-die small{font-size:7px}.mm-die-face{border-radius:10px}.mm-ticket-prices{grid-template-columns:1fr 1fr}.mm-size{grid-column:1/-1}.mm-size .tool-segment button{flex:1}.mm-ticket input{font-size:18px;padding:10px 12px}.mm-ticket .poker-deal,.mm-result .poker-deal,.mm-summary .poker-deal{width:100%;max-width:none}.mm-result h3{font-size:20px}.mm-pnl{font-size:48px}.mm-compare{grid-template-columns:1fr}.mm-compare b{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.mm-die-shown,.mm-ticket,.mm-result,.mm-summary,.mm-blotter li{animation:none!important}}

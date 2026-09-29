@@ -1,0 +1,50 @@
+[
+  {
+    "id": "balanced",
+    "title": "Balanced flow",
+    "description": "Two-sided flow with frequent replenishment.",
+    "joinProbability": 0.5,
+    "cancelProbability": 0.25,
+    "buyProbability": 0.5,
+    "sizeMedian": 6,
+    "sizeSigma": 0.7,
+    "eventsPerSecond": 2,
+    "tickSize": 0.01
+  },
+  {
+    "id": "buy-pressure",
+    "title": "Buying pressure",
+    "description": "More aggressive buyers compete for offers.",
+    "joinProbability": 0.4,
+    "cancelProbability": 0.2,
+    "buyProbability": 0.7,
+    "sizeMedian": 9,
+    "sizeSigma": 0.9,
+    "eventsPerSecond": 3,
+    "tickSize": 0.01
+  },
+  {
+    "id": "sell-pressure",
+    "title": "Selling pressure",
+    "description": "More aggressive sellers compete for bids.",
+    "joinProbability": 0.4,
+    "cancelProbability": 0.2,
+    "buyProbability": 0.3,
+    "sizeMedian": 9,
+    "sizeSigma": 0.9,
+    "eventsPerSecond": 3,
+    "tickSize": 0.01
+  },
+  {
+    "id": "liquidity-drain",
+    "title": "Liquidity withdrawal",
+    "description": "Cancellations are frequent and replenishment is sparse.",
+    "joinProbability": 0.25,
+    "cancelProbability": 0.5,
+    "buyProbability": 0.5,
+    "sizeMedian": 5,
+    "sizeSigma": 1,
+    "eventsPerSecond": 1.5,
+    "tickSize": 0.01
+  }
+]

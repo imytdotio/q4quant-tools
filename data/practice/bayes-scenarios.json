@@ -1,0 +1,438 @@
+[
+  {
+    "title": "Which bag did it come from?",
+    "category": "Coloured balls",
+    "prior": 0.5,
+    "population": 100,
+    "subject": "draws from bag A",
+    "others": "draws from bag B",
+    "question": "You pick either bag with equal probability and draw a red ball. What is the probability you picked bag A?",
+    "note": "Bag A contains 80% red balls. Bag B contains 20% red balls.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.2,
+      "label": "a red ball is drawn"
+    },
+    "followUp": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.2,
+      "label": "a second red ball, after the first goes back",
+      "question": "The ball goes back in the bag. You draw red again. What is the probability you picked bag A?",
+      "independence": "Given which bag you picked, the second draw does not depend on the first. Two reds are still more likely together, because both are more likely from bag A."
+    },
+    "id": "original-1",
+    "visualization": "population-grid"
+  },
+  {
+    "title": "An alert in your inbox",
+    "category": "Everyday probability",
+    "prior": 0.4,
+    "population": 100,
+    "subject": "spam messages",
+    "others": "legitimate messages",
+    "question": "A message is marked as spam. What is the probability it really is spam?",
+    "note": "The filter catches 90% of spam and incorrectly flags 10% of legitimate messages.",
+    "evidence": {
+      "sensitivity": 0.9,
+      "falsePositive": 0.1,
+      "label": "marked as spam"
+    },
+    "id": "original-2",
+    "visualization": "population-grid"
+  },
+  {
+    "title": "A signal worth following?",
+    "category": "Trading signals",
+    "prior": 0.2,
+    "population": 100,
+    "subject": "undervalued assets",
+    "others": "other assets",
+    "question": "An asset is flagged. What is the probability it is undervalued?",
+    "note": "All numbers are fictional. The signal flags some fairly valued assets too.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.1,
+      "label": "flagged by a research signal"
+    },
+    "followUp": {
+      "sensitivity": 0.75,
+      "falsePositive": 0.25,
+      "label": "also flagged by a second research signal",
+      "question": "A second signal flags the same asset. What is the probability it is undervalued now?",
+      "independence": "Given whether the asset is undervalued, the second signal does not depend on the first. The flags still move together in the sample, because both are more common for undervalued assets."
+    },
+    "id": "original-3",
+    "visualization": "population-grid"
+  },
+  {
+    "title": "The stronger filter",
+    "category": "Trading signals",
+    "prior": 0.1,
+    "population": 1000,
+    "subject": "undervalued assets",
+    "others": "other assets",
+    "question": "An asset passes the stricter filter. What is the probability it is undervalued?",
+    "note": "A low false-positive rate can matter more than finding every positive case.",
+    "evidence": {
+      "sensitivity": 0.6,
+      "falsePositive": 0.02,
+      "label": "flagged by a stricter signal"
+    },
+    "id": "original-4",
+    "visualization": "frequency-bars"
+  },
+  {
+    "title": "The rare-event trap",
+    "category": "Base rates",
+    "prior": 0.01,
+    "population": 10000,
+    "subject": "faulty components",
+    "others": "working components",
+    "question": "A component is flagged. What is the probability it is faulty?",
+    "note": "Only 1% of components are faulty. A reliable inspection can still produce many false alarms.",
+    "evidence": {
+      "sensitivity": 0.9,
+      "falsePositive": 0.05,
+      "label": "flagged by an inspection"
+    },
+    "id": "original-5",
+    "visualization": "probability-tree"
+  },
+  {
+    "title": "A noisy regime detector",
+    "category": "Market regimes",
+    "prior": 0.3,
+    "population": 1000,
+    "subject": "high-volatility days",
+    "others": "normal-volatility days",
+    "question": "The detector flags today. What is the probability it is a high-volatility day?",
+    "note": "This is a fictional classification exercise, not a forecast using market data.",
+    "evidence": {
+      "sensitivity": 0.7,
+      "falsePositive": 0.2,
+      "label": "flagged by a regime detector"
+    },
+    "id": "original-6",
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "fraud-alert",
+    "title": "A rare payment alert",
+    "category": "Fraud screening",
+    "prior": 0.002,
+    "population": 100000,
+    "subject": "fraudulent payments",
+    "others": "genuine payments",
+    "question": "Observed evidence: flagged by a payment monitor. What is the probability that the case belongs to the target group (fraudulent payments)?",
+    "note": "All rates are fictional. Rare fraud can still be outnumbered by false alarms.",
+    "evidence": {
+      "sensitivity": 0.95,
+      "falsePositive": 0.01,
+      "label": "flagged by a payment monitor"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "quality-check",
+    "title": "Two production lines",
+    "category": "Manufacturing",
+    "prior": 0.25,
+    "population": 1000,
+    "subject": "items from line A",
+    "others": "items from line B",
+    "question": "Observed evidence: fails inspection. What is the probability that the case belongs to the target group (items from line A)?",
+    "note": "All rates are fictional. A failed inspection gives evidence about which line produced an item.",
+    "evidence": {
+      "sensitivity": 0.12,
+      "falsePositive": 0.04,
+      "label": "fails inspection"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "rain-forecast",
+    "title": "Should you pack an umbrella?",
+    "category": "Everyday probability",
+    "prior": 0.2,
+    "population": 1000,
+    "subject": "rainy days",
+    "others": "dry days",
+    "question": "Observed evidence: forecast says rain. What is the probability that the case belongs to the target group (rainy days)?",
+    "note": "All rates are fictional. A forecast hit rate is not the probability of rain given a forecast.",
+    "evidence": {
+      "sensitivity": 0.9,
+      "falsePositive": 0.3,
+      "label": "forecast says rain"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "earnings",
+    "title": "An earnings surprise signal",
+    "category": "Trading signals",
+    "prior": 0.4,
+    "population": 1000,
+    "subject": "positive-surprise reports",
+    "others": "other reports",
+    "question": "Observed evidence: research predicts a positive surprise. What is the probability that the case belongs to the target group (positive-surprise reports)?",
+    "note": "All rates are fictional. This estimates a reporting outcome, not a profitable trade after costs.",
+    "evidence": {
+      "sensitivity": 0.75,
+      "falsePositive": 0.25,
+      "label": "research predicts a positive surprise"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "liquidity",
+    "title": "Detecting thin liquidity",
+    "category": "Market regimes",
+    "prior": 0.1,
+    "population": 1000,
+    "subject": "thin-liquidity intervals",
+    "others": "normal-liquidity intervals",
+    "question": "Observed evidence: spread alarm activates. What is the probability that the case belongs to the target group (thin-liquidity intervals)?",
+    "note": "All rates are fictional. The base rate applies to intervals, not the number of trades.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.2,
+      "label": "spread alarm activates"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "negative-test",
+    "title": "A reassuring result",
+    "category": "Base rates",
+    "prior": 0.1,
+    "population": 1000,
+    "subject": "faulty sensors",
+    "others": "working sensors",
+    "question": "Observed evidence: passes inspection. What is the probability that the case belongs to the target group (faulty sensors)?",
+    "note": "All rates are fictional. Here the observed evidence is a pass: use the probability of passing in each group.",
+    "evidence": {
+      "sensitivity": 0.1,
+      "falsePositive": 0.95,
+      "label": "passes inspection"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "uninformative",
+    "title": "A signal with no information",
+    "category": "Evidence quality",
+    "prior": 0.3,
+    "population": 1000,
+    "subject": "up days",
+    "others": "other days",
+    "question": "Observed evidence: indicator turns blue. What is the probability that the case belongs to the target group (up days)?",
+    "note": "All rates are fictional. Equal likelihoods leave the prior unchanged.",
+    "evidence": {
+      "sensitivity": 0.5,
+      "falsePositive": 0.5,
+      "label": "indicator turns blue"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "contrarian",
+    "title": "When a flag lowers your belief",
+    "category": "Evidence quality",
+    "prior": 0.4,
+    "population": 1000,
+    "subject": "strong businesses",
+    "others": "other businesses",
+    "question": "Observed evidence: a warning appears. What is the probability that the case belongs to the target group (strong businesses)?",
+    "note": "All rates are fictional. Evidence can lower the probability of the target group.",
+    "evidence": {
+      "sensitivity": 0.2,
+      "falsePositive": 0.8,
+      "label": "a warning appears"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "recruitment",
+    "title": "A screening exercise",
+    "category": "Everyday probability",
+    "prior": 0.2,
+    "population": 1000,
+    "subject": "qualified applicants",
+    "others": "other applicants",
+    "question": "Observed evidence: passes a screening exercise. What is the probability that the case belongs to the target group (qualified applicants)?",
+    "note": "All rates are fictional. This fictional screen illustrates selection and base rates.",
+    "evidence": {
+      "sensitivity": 0.9,
+      "falsePositive": 0.3,
+      "label": "passes a screening exercise"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "coin",
+    "title": "Which coin was chosen?",
+    "category": "Coins and bags",
+    "prior": 0.5,
+    "population": 1000,
+    "subject": "draws using coin A",
+    "others": "draws using coin B",
+    "question": "Observed evidence: coin lands heads. What is the probability that the case belongs to the target group (draws using coin A)?",
+    "note": "All rates are fictional. Coin A has a 70% heads rate; coin B has a 40% heads rate.",
+    "evidence": {
+      "sensitivity": 0.7,
+      "falsePositive": 0.4,
+      "label": "coin lands heads"
+    },
+    "visualization": "frequency-bars",
+    "followUp": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.2,
+      "label": "an independent follow-up also supports the target",
+      "question": "After this second observation, what is your updated target probability?",
+      "independence": "In this fictional model, observations are independent conditional on target membership. This assumption must be checked before multiplying real-world likelihoods."
+    }
+  },
+  {
+    "id": "regime-rare",
+    "title": "A rare stress regime",
+    "category": "Market regimes",
+    "prior": 0.05,
+    "population": 10000,
+    "subject": "stress days",
+    "others": "ordinary days",
+    "question": "Observed evidence: stress indicator fires. What is the probability that the case belongs to the target group (stress days)?",
+    "note": "All rates are fictional. An 80% detection rate alone does not establish an 80% posterior.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.1,
+      "label": "stress indicator fires"
+    },
+    "visualization": "probability-tree"
+  },
+  {
+    "id": "delivery",
+    "title": "Where did the late parcel start?",
+    "category": "Everyday probability",
+    "prior": 0.6,
+    "population": 1000,
+    "subject": "parcels from depot A",
+    "others": "parcels from depot B",
+    "question": "Observed evidence: parcel arrives late. What is the probability that the case belongs to the target group (parcels from depot A)?",
+    "note": "All rates are fictional. Late parcels are less likely from the more frequently used depot.",
+    "evidence": {
+      "sensitivity": 0.1,
+      "falsePositive": 0.3,
+      "label": "parcel arrives late"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "research",
+    "title": "Replication evidence",
+    "category": "Research",
+    "prior": 0.1,
+    "population": 10000,
+    "subject": "hypotheses with a real effect",
+    "others": "null hypotheses",
+    "question": "Observed evidence: experiment is significant. What is the probability that the case belongs to the target group (hypotheses with a real effect)?",
+    "note": "All rates are fictional. These are hypothetical operating characteristics, not empirical research success rates.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.05,
+      "label": "experiment is significant"
+    },
+    "visualization": "probability-tree",
+    "followUp": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.2,
+      "label": "an independent follow-up also supports the target",
+      "question": "After this second observation, what is your updated target probability?",
+      "independence": "In this fictional model, observations are independent conditional on target membership. This assumption must be checked before multiplying real-world likelihoods."
+    }
+  },
+  {
+    "id": "credit",
+    "title": "A credit warning",
+    "category": "Risk classification",
+    "prior": 0.02,
+    "population": 10000,
+    "subject": "defaults",
+    "others": "non-defaults",
+    "question": "Observed evidence: warning indicator activates. What is the probability that the case belongs to the target group (defaults)?",
+    "note": "All rates are fictional. A classification probability is not a complete credit decision.",
+    "evidence": {
+      "sensitivity": 0.75,
+      "falsePositive": 0.1,
+      "label": "warning indicator activates"
+    },
+    "visualization": "frequency-bars"
+  },
+  {
+    "id": "urn-small",
+    "title": "A blue ball from a small urn",
+    "category": "Coloured balls",
+    "prior": 0.5,
+    "population": 100,
+    "subject": "draws from urn A",
+    "others": "draws from urn B",
+    "question": "Observed evidence: a blue ball is drawn. What is the probability that the case belongs to the target group (draws from urn A)?",
+    "note": "All rates are fictional. Both urns are equally likely to be selected.",
+    "evidence": {
+      "sensitivity": 0.6,
+      "falsePositive": 0.2,
+      "label": "a blue ball is drawn"
+    },
+    "visualization": "population-grid"
+  },
+  {
+    "id": "inventory",
+    "title": "A stock-out signal",
+    "category": "Operations",
+    "prior": 0.25,
+    "population": 100,
+    "subject": "stock-out days",
+    "others": "fully stocked days",
+    "question": "Observed evidence: inventory alarm fires. What is the probability that the case belongs to the target group (stock-out days)?",
+    "note": "All rates are fictional. Count all alarm days in the denominator.",
+    "evidence": {
+      "sensitivity": 0.8,
+      "falsePositive": 0.4,
+      "label": "inventory alarm fires"
+    },
+    "visualization": "population-grid"
+  },
+  {
+    "id": "balanced",
+    "title": "A balanced classification problem",
+    "category": "Base rates",
+    "prior": 0.5,
+    "population": 100,
+    "subject": "target cases",
+    "others": "other cases",
+    "question": "Observed evidence: classifier flags the case. What is the probability that the case belongs to the target group (target cases)?",
+    "note": "All rates are fictional. With equal priors, likelihoods determine the posterior odds.",
+    "evidence": {
+      "sensitivity": 0.9,
+      "falsePositive": 0.1,
+      "label": "classifier flags the case"
+    },
+    "visualization": "population-grid"
+  },
+  {
+    "id": "weak-filter",
+    "title": "A weak research filter",
+    "category": "Trading signals",
+    "prior": 0.2,
+    "population": 100,
+    "subject": "genuine opportunities",
+    "others": "other assets",
+    "question": "Observed evidence: filter flags an asset. What is the probability that the case belongs to the target group (genuine opportunities)?",
+    "note": "All rates are fictional. Small likelihood differences produce modest belief updates.",
+    "evidence": {
+      "sensitivity": 0.6,
+      "falsePositive": 0.4,
+      "label": "filter flags an asset"
+    },
+    "visualization": "population-grid"
+  }
+]
