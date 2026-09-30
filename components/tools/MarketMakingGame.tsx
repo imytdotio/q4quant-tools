@@ -8,6 +8,7 @@ import {
   type FlowProfileId, type Game, type Source, type SourceId, type StepResult,
 } from '@/lib/market-making'
 import { RANKS, SUITS, cardLabel } from '@/lib/poker'
+import type { ToolLock } from './catalog'
 import './market-making.css'
 
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -61,7 +62,7 @@ function lesson(s: ReturnType<typeof summarize>, trades: number, source: Source)
   return 'You collected the spread from noise flow without handing it back to the insider. That balance is the whole job of a market maker.'
 }
 
-export default function MarketMakingGame() {
+export default function MarketMakingGame({ lock }: { lock?: ToolLock } = {}) {
   const [profileId, setProfileId] = useState<FlowProfileId>('standard')
   const [sourceId, setSourceId] = useState<SourceId>('dice')
   const [game, setGame] = useState<Game | null>(null)
@@ -100,6 +101,8 @@ export default function MarketMakingGame() {
   const widthValid = bid.trim() !== '' && ask.trim() !== '' && Number.isFinite(width) && width > 0
   const summary = game && stage === 'settled' ? summarize(game, results) : null
   const willReveal = latest && latest.step % QUOTES_PER_REVEAL === QUOTES_PER_REVEAL - 1 && latest.revealed < ITEM_COUNT - 1
+  // A host page can hold back the second public die or card.
+  const gated = !!lock?.locked && !!willReveal && latest.revealed + 1 >= 2
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -152,7 +155,7 @@ export default function MarketMakingGame() {
           <h3>{!latest.trade ? 'The counterparty passed.' : latest.trade.makerSide === 'sell' ? `Lifted. You sold ${latest.trade.size} at ${money(latest.trade.price)}.` : `Hit. You bought ${latest.trade.size} at ${money(latest.trade.price)}.`}</h3>
           <p>Your market was {money(latest.quote.bid)} – {money(latest.quote.ask)} for {latest.quote.size}. {latest.trade ? 'Was that the insider, or noise? Every counterparty is unmasked at settlement.' : 'A pass is information too: the insider only passes when their value sits inside your market.'}</p>
           {showFair && <p className="mm-result-fair">Public fair value was <b>{money(latest.publicFair)}</b>. Your mid was {money((latest.quote.bid + latest.quote.ask) / 2)}, {(() => { const off = (latest.quote.bid + latest.quote.ask) / 2 - latest.publicFair; return Math.abs(off) < .005 ? 'right on fair' : `${money(Math.abs(off))} ${off > 0 ? 'above' : 'below'} fair` })()}.</p>}
-          <button className="poker-deal" type="button" onClick={next} autoFocus>{results.length >= TOTAL_QUOTES ? 'Settle the game' : willReveal ? `Reveal ${source.noun} ${latest.revealed + 1}` : 'Next quote'} <span aria-hidden="true">→</span></button>
+          {gated && lock!.notice ? <>{lock!.notice}<button className="poker-reset" type="button" onClick={() => start(profileId, sourceId)}>Start a new game ↺</button></> : <button className="poker-deal" type="button" onClick={gated ? lock!.onBlocked : next} autoFocus>{results.length >= TOTAL_QUOTES ? 'Settle the game' : willReveal ? `Reveal ${source.noun} ${latest.revealed + 1}` : 'Next quote'} <span aria-hidden="true">→</span></button>}
         </div>}
 
         {summary && game && <div className="mm-summary">

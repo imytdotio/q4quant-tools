@@ -3,6 +3,7 @@
 import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { ThinkingOrb } from 'thinking-orbs'
+import type { ToolLock } from './catalog'
 import { calculatePokerOdds, cardLabel, handName, RANKS, SUITS, seededRandom, shuffledDeck, type PokerOdds } from '@/lib/poker'
 
 function newDeck() {
@@ -15,7 +16,7 @@ function PlayingCard({ card, index = 0, hidden = false }: { card?: number; index
   return <div className={`poker-card poker-card-face ${suit === 1 || suit === 2 ? 'poker-card-red' : ''}`} aria-label={cardLabel(card)} style={{ '--deal-delay': `${index * 45}ms` } as CSSProperties}><span className="poker-card-corner" aria-hidden="true">{rank}<small>{SUITS[suit]}</small></span><span className="poker-card-suit" aria-hidden="true">{SUITS[suit]}</span><span className="poker-card-corner poker-card-corner-bottom" aria-hidden="true">{rank}<small>{SUITS[suit]}</small></span></div>
 }
 
-export default function PokerTrainer() {
+export default function PokerTrainer({ lock }: { lock?: ToolLock } = {}) {
   const [deck, setDeck] = useState<number[]>([])
   const [count, setCount] = useState(0)
   const [hidden, setHidden] = useState(false)
@@ -45,6 +46,8 @@ export default function PokerTrainer() {
   const ready = deck.length === 52
   const stage = ['Pre-flop', 'First community card', 'Second community card', 'Flop complete', 'Turn', 'River'][count]
   const reset = () => { setCount(0); setDeck(newDeck()) }
+  // A host page can hold back the second community card.
+  const gated = !!lock?.locked && count === 1
   const win = odds ? 100 * odds.wins / odds.total : 0
   const tie = odds ? 100 * odds.ties / odds.total : 0
   const loss = odds ? 100 * odds.losses / odds.total : 0
@@ -57,7 +60,8 @@ export default function PokerTrainer() {
         <div className="poker-opponent"><div className="poker-mini-cards"><PlayingCard hidden /><PlayingCard hidden /></div><div><h3>One random opponent</h3><p>Two unknown cards. No betting information.</p></div></div>
         <div className="poker-community"><div className="poker-section-label"><span>THE BOARD</span><span>Shared by both players</span></div><div className="poker-board">{Array.from({ length: 5 }, (_, i) => <PlayingCard key={board[i] === undefined ? `empty-${i}` : `card-${board[i]}`} card={board[i]} index={i} />)}</div></div>
         <div className="poker-player"><div className="poker-hole">{[0,1].map(i => <PlayingCard key={hole[i] ?? i} card={hole[i]} index={i} />)}</div><div><p className="tools-eyebrow">YOUR HAND</p><h3>{ready ? label : 'Dealing your hand…'}</h3><p>{count < 5 ? 'What changes when the next card lands?' : 'All five cards are out. Review your odds, then deal again.'}</p></div></div>
-        <div className="poker-actions"><button className="poker-deal" disabled={!ready} onClick={count === 5 ? reset : () => setCount(n => Math.min(5, n + 1))}>{count === 5 ? 'Deal a new hand' : 'Reveal next card'} <span aria-hidden="true">{count === 5 ? '↺' : '→'}</span></button>{count < 5 && <button className="poker-reset" onClick={reset} disabled={!ready}>Reset hand ↺</button>}</div>
+        {gated && lock!.notice}
+        <div className="poker-actions">{!(gated && lock!.notice) && <button className="poker-deal" disabled={!ready} onClick={gated ? lock!.onBlocked : count === 5 ? reset : () => setCount(n => Math.min(5, n + 1))}>{count === 5 ? 'Deal a new hand' : 'Reveal next card'} <span aria-hidden="true">{count === 5 ? '↺' : '→'}</span></button>}{count < 5 && <button className="poker-reset" onClick={reset} disabled={!ready}>Reset hand ↺</button>}</div>
         <p className="poker-training-note">Training mode reveals the board one card at a time. In a normal game, the first three community cards are dealt together.</p>
       </div>
       <aside className="poker-analysis">

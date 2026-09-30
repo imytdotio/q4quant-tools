@@ -6,19 +6,13 @@ import BayesTrainer from './BayesTrainer'
 import MarketMakingGame from './MarketMakingGame'
 import OrderBookSimulator from './OrderBookSimulator'
 import PokerTrainer from './PokerTrainer'
+import { TOOLS, type ToolId, type ToolLock } from './catalog'
 import { surfaceVolatility, projectSurface, type SurfaceShape } from '@/lib/volatility-surface'
 import { DEFAULT_OPTION, optionPrice, type OptionInputs, type OptionKind } from '@/lib/options-pricing'
 
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
-const apps = [
-  { id: 'options', number: '01', title: 'Options pricing', glyph: '▦', slug: 'options-pricing' },
-  { id: 'surface', number: '02', title: 'Volatility surface', glyph: '▱', slug: 'volatility-surface' },
-  { id: 'poker', number: '03', title: 'Texas Hold’em', glyph: '♠', slug: 'texas-holdem' },
-  { id: 'bayes', number: '04', title: 'Bayes’ rule', glyph: 'P', slug: 'bayes-rule' },
-  { id: 'book', number: '05', title: 'Order book', glyph: '⇅', slug: 'order-book' },
-  { id: 'market', number: '06', title: 'Market making', glyph: '⇄', slug: 'market-making' },
-] as const
-type AppId = typeof apps[number]['id']
+const apps = TOOLS
+type AppId = ToolId
 
 // Interpolate from the current frame so repeated slider updates never snap back.
 function useAnimatedValues(target: number[]) {
@@ -50,7 +44,7 @@ function Slider({ label, value, min, max, step = 1, unit = '', onChange }: { lab
   return <label className="tool-control"><span>{label}<output>{unit === '$' ? money(value) : `${value}${unit}`}</output></span><input aria-label={label} type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} /><small><span>{min}{unit === '$' ? ' USD' : unit}</span><span>{max}{unit === '$' ? ' USD' : unit}</span></small></label>
 }
 
-export default function ToolsWorkbench() {
+export default function ToolsWorkbench({ locks = {} }: { locks?: Partial<Record<ToolId, ToolLock>> } = {}) {
   const [app, setApp] = useState<AppId>('options')
   const [history, setHistory] = useState<{ stack: AppId[]; index: number }>({ stack: ['options'], index: 0 })
   const [pinned, setPinned] = useState(false)
@@ -185,12 +179,12 @@ export default function ToolsWorkbench() {
           <span className="tools-browser-count" aria-hidden="true">{current.number} / {String(apps.length).padStart(2, '0')}</span>
         </div>
       </div>
-      <div className="tool-app" id="tool-panel" role="tabpanel" aria-labelledby={`tool-tab-${app}`} key={app}>{app === 'options' ? <OptionsApp /> : app === 'surface' ? <VolatilitySurface /> : app === 'poker' ? <PokerTrainer /> : app === 'bayes' ? <BayesTrainer /> : app === 'book' ? <OrderBookSimulator /> : <MarketMakingGame />}</div>
+      <div className="tool-app" id="tool-panel" role="tabpanel" aria-labelledby={`tool-tab-${app}`} key={app}>{app === 'options' ? <OptionsApp /> : app === 'surface' ? <VolatilitySurface /> : app === 'poker' ? <PokerTrainer lock={locks.poker} /> : app === 'bayes' ? <BayesTrainer lock={locks.bayes} /> : app === 'book' ? <OrderBookSimulator /> : <MarketMakingGame lock={locks.market} />}</div>
     </div>
   </section>
 }
 
-function OptionsApp() {
+export function OptionsApp() {
   const [inputs, setInputs] = useState<OptionInputs>(DEFAULT_OPTION)
   const [kind, setKind] = useState<OptionKind>('call')
   const [view, setView] = useState<'heatmap' | 'curves'>('heatmap')
@@ -291,7 +285,7 @@ const surfaceColor = (theme: SurfaceTheme, t: number) => {
 }
 const surfaceGradient = (theme: SurfaceTheme) => `linear-gradient(90deg,${SURFACE_THEMES[theme].stops.map(c => `rgb(${c.join(',')})`).join(',')})`
 
-function VolatilitySurface() {
+export function VolatilitySurface() {
   const [shape, setShape] = useState<SurfaceShape>(SURFACE_PRESETS.smile)
   const [forward, setForward] = useState(100)
   const [selected, setSelected] = useState({ strike: 12, expiry: 9 })

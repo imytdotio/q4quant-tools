@@ -2,6 +2,7 @@
 
 import ToolSourceLink from './ToolSourceLink'
 import { useEffect, useState, type CSSProperties } from 'react'
+import type { ToolLock } from './catalog'
 import { BAYES_ROUNDS, sampleBayesRounds, validBayesRound, type BayesRound, bayesPosterior, evidenceSplit, populationCells, type BayesCell } from '@/lib/bayes'
 
 const percent = (n: number) => `${(n * 100).toLocaleString(undefined, { maximumFractionDigits: 3 })}%`
@@ -22,7 +23,7 @@ function cellsFrom(counts: number[], kinds: string[]) {
   return counts.flatMap((n, i) => Array(Math.round(n)).fill(kinds[i]))
 }
 
-export default function BayesTrainer() {
+export default function BayesTrainer({ lock }: { lock?: ToolLock } = {}) {
   const [pool, setPool] = useState<BayesRound[]>(BAYES_ROUNDS)
   const [rounds, setRounds] = useState<BayesRound[]>(BAYES_ROUNDS.slice(0, 6))
   const [loading, setLoading] = useState(true)
@@ -58,7 +59,9 @@ export default function BayesTrainer() {
   const settled = useSettled(revealed, grid || followGrid ? 1100 : 600)
   const meanError = errors.length ? errors.reduce((sum, item) => sum + item.error, 0) / errors.length : 0
   const reset = () => { setRounds(sampleBayesRounds(pool)); setRound(0); setStep(0); setGuess(50); setRevealed(false); setErrors([]); setFinished(false) }
-  const reveal = () => { if (revealed) return; setRevealed(true); setErrors(old => [...old, { label: step === 0 ? r.title : `${r.title} · second observation`, error }]) }
+  // A host page can hold back answers from the second question on.
+  const gated = !!lock?.locked && !revealed && errors.length >= 1
+  const reveal = () => { if (revealed) return; if (gated) { lock!.onBlocked?.(); return } setRevealed(true); setErrors(old => [...old, { label: step === 0 ? r.title : `${r.title} · second observation`, error }]) }
   const next = () => {
     if (step === 0 && r.followUp) { setStep(1); setGuess(Math.round(answer)); setRevealed(false); return }
     if (round === rounds.length - 1) { setFinished(true); return }
@@ -76,7 +79,8 @@ export default function BayesTrainer() {
         <p className="bayes-evidence"><span>OBSERVED EVIDENCE</span>{likelihood.label}</p>
         {step === 1 && <p className="bayes-independence"><span>CONDITIONAL INDEPENDENCE</span>{r.followUp!.independence}</p>}
         <label className="bayes-guess">Your updated probability<output>{guess}%</output><input aria-label="Your probability estimate" type="range" min={0} max={100} step={1} disabled={revealed} value={guess} onChange={e => setGuess(Number(e.target.value))} /><small><span>0% · impossible</span><span>100% · certain</span></small></label>
-        <div className="bayes-buttons">{revealed ? <button className="poker-deal" onClick={next}>{step === 0 && r.followUp ? 'Another observation' : round === rounds.length - 1 ? 'See session results' : 'Next challenge'} →</button> : <button className="poker-deal" onClick={reveal}>Reveal the answer →</button>}<span>{errors.length} answered{errors.length > 0 ? ` · ${meanError.toFixed(1)} pp average error` : ''}</span></div>
+        {gated && lock!.notice}
+        <div className="bayes-buttons">{revealed ? <button className="poker-deal" onClick={next}>{step === 0 && r.followUp ? 'Another observation' : round === rounds.length - 1 ? 'See session results' : 'Next challenge'} →</button> : !(gated && lock!.notice) && <button className="poker-deal" onClick={reveal}>Reveal the answer →</button>}<span>{errors.length} answered{errors.length > 0 ? ` · ${meanError.toFixed(1)} pp average error` : ''}</span></div>
         <p className="poker-training-note">{r.note}</p>
       </div>
       <aside className="bayes-explanation" aria-live="polite">
