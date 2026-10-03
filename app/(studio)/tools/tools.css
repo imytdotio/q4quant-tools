@@ -14,8 +14,8 @@
 
 /* Match the Newsletter hero's geometry and type at every breakpoint. */
 .tools-heading{display:grid;grid-template-columns:1.1fr .9fr;gap:8%;align-items:end;padding:104px 6% 72px;border-bottom:1px solid var(--line)}
-.tools-heading .tools-eyebrow{margin-bottom:24px;color:#536783;font:10px var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
-.tools-heading .tools-eyebrow:before{content:'';display:inline-block;width:5px;height:5px;margin-right:9px;background:var(--blue);vertical-align:middle}
+
+
 .tools-heading h1{font-size:clamp(62px,9vw,132px);font-weight:500;letter-spacing:-.085em;line-height:.82}
 @media(max-width:800px){.tools-heading{grid-template-columns:1fr;gap:45px;padding-top:78px}.tools-heading h1{font-size:clamp(66px,19vw,110px)}}
 @media(max-width:500px){.tools-heading{padding:66px 18px 52px}}
